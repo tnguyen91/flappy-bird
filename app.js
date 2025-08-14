@@ -31,6 +31,7 @@ let hasLanded = false;
 let hasBumped = false;
 let cursors;
 let isGameStarted = false;
+let messageToPlayer;
 
 function create () {
     const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
@@ -65,18 +66,20 @@ function create () {
 
     cursors = this.input.keyboard.createCursorKeys();
 
+    messageToPlayer = this.add.text(0, 0, `Instructions: Press space bar to start`, { fontFamily: '"Comic Sans MS", Times, serif', fontSize: "20px", color: "white", backgroundColor: "black" });
+    Phaser.Display.Align.In.BottomCenter(messageToPlayer, background, 0, 50);
 }
 
 function update () {
     if (cursors.space.isDown && !isGameStarted) {
         isGameStarted = true;
+        messageToPlayer.text = 'Instructions: Press the space bar to stay upright\nAnd don\'t hit the columns or ground';
     }
     if (!isGameStarted) {
         bird.setVelocityY(0);
-        bird.body.velocity.x = 0;
     }
 
-    if (cursors.up.isDown && !hasLanded && !hasBumped) {
+    if (cursors.space.isDown && !hasLanded && !hasBumped) {
         bird.setVelocityY(-160);
     }
 
@@ -87,4 +90,11 @@ function update () {
     if (hasLanded || hasBumped || !isGameStarted) {
         bird.body.velocity.x = 0;
     }
+    if (hasLanded || hasBumped) {
+        messageToPlayer.text = `Oh no! You crashed!`;
+    }
+    if (bird.x > 750) {
+        bird.setVelocityY(40);
+        messageToPlayer.text = `Congrats! You won!`;
+    } 
 }

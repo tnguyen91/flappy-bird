@@ -83,13 +83,13 @@ function update () {
         bird.setVelocityY(-160);
     }
 
-    if (!hasLanded || !hasBumped) {
+    if (!hasLanded && !hasBumped && isGameStarted) {
         bird.body.velocity.x = 50;
     }
-
-    if (hasLanded || hasBumped || !isGameStarted) {
+    else {
         bird.body.velocity.x = 0;
     }
+    
     if (hasLanded || hasBumped) {
         messageToPlayer.text = `Oh no! You crashed!`;
     }

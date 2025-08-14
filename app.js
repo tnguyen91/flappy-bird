@@ -30,6 +30,7 @@ let bird;
 let hasLanded = false;
 let hasBumped = false;
 let cursors;
+let isGameStarted = false;
 
 function create () {
     const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
@@ -67,15 +68,23 @@ function create () {
 }
 
 function update () {
-    bird.body.velocity.x = 50;
+    if (cursors.space.isDown && !isGameStarted) {
+        isGameStarted = true;
+    }
+    if (!isGameStarted) {
+        bird.setVelocityY(0);
+        bird.body.velocity.x = 0;
+    }
 
     if (cursors.up.isDown && !hasLanded && !hasBumped) {
         bird.setVelocityY(-160);
     }
 
-    if(!hasLanded && !hasBumped) {
+    if (!hasLanded || !hasBumped) {
         bird.body.velocity.x = 50;
-    } else {
+    }
+
+    if (hasLanded || hasBumped || !isGameStarted) {
         bird.body.velocity.x = 0;
     }
 }

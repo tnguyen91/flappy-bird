@@ -54,16 +54,11 @@ function create () {
     const road = roads.create(400, 568, 'road').setScale(2).refreshBody();
 
     bird = this.physics.add.sprite(0, 50, 'bird').setScale(2);
-    bird.setBounce(0.2);
     bird.setCollideWorldBounds(true);
 
-    this.physics.add.overlap(bird, road, () => (hasLanded = true), null, this);
-    this.physics.add.overlap(bird, topColumns, () => (hasBumped = true), null, this);
-    this.physics.add.overlap(bird, bottomColumns, () => (hasBumped = true), null, this);
-
-    this.physics.add.collider(bird, road);
-    this.physics.add.collider(bird, topColumns);
-    this.physics.add.collider(bird, bottomColumns);
+    this.physics.add.collider(bird, road, () => (hasLanded = true), null, this);
+    this.physics.add.collider(bird, topColumns, () => (hasBumped = true), null, this);
+    this.physics.add.collider(bird, bottomColumns, () => (hasBumped = true), null, this);
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -72,30 +67,42 @@ function create () {
 }
 
 function update () {
-    if (cursors.space.isDown && !isGameStarted) {
-        isGameStarted = true;
-        bird.body.setAllowGravity(true);
-        messageToPlayer.text = 'Instructions: Press the space bar to stay upright\nAnd don\'t hit the columns or ground';
-    }
     if (!isGameStarted) {
         bird.body.setAllowGravity(false);
     }
 
-    if (cursors.space.isDown && !hasLanded && !hasBumped) {
-        bird.setVelocityY(-160);
+    if (!isGameStarted && Phaser.Input.Keyboard.JustDown(cursors.space)) {
+        isGameStarted = true;
+        bird.body.setAllowGravity(true);
+        bird.setVelocityY(-150);
+        messageToPlayer.text = 'Instructions: Tap space to flap\nAvoid the columns and ground';
     }
 
-    if (!hasLanded && !hasBumped && isGameStarted) {
-        bird.setVelocityX(50);
+    if (isGameStarted && !hasLanded && !hasBumped && Phaser.Input.Keyboard.JustDown(cursors.space)) {
+        bird.setVelocityY(-150);
     }
-    else {
+
+    if (isGameStarted && !hasLanded && !hasBumped && !hasWon) {
+        bird.setVelocityX(50);
+    } else {
         bird.setVelocityX(0);
     }
-    
-    if (hasLanded || hasBumped) {
-        messageToPlayer.text = `Oh no! You crashed!`;
+
+    if (bird.x > 750 && !hasWon) {
+        hasWon = true;
     }
-    if (bird.x > 750) {
+
+    if (hasWon) {
+        bird.setVelocity(0, 0);
+        bird.body.setAllowGravity(false);
         messageToPlayer.text = `Congrats! You won!`;
-    } 
+        return;
+    }
+
+    if (hasLanded || hasBumped) {
+        bird.setVelocity(0, 0);
+        bird.body.setAllowGravity(false);
+        messageToPlayer.text = `Oh no! You crashed!`;
+        return;
+    }
 }

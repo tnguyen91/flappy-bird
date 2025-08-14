@@ -32,6 +32,7 @@ let hasBumped = false;
 let cursors;
 let isGameStarted = false;
 let messageToPlayer;
+let hasWon = false;
 
 function create () {
     const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
@@ -73,10 +74,11 @@ function create () {
 function update () {
     if (cursors.space.isDown && !isGameStarted) {
         isGameStarted = true;
+        bird.body.setAllowGravity(true);
         messageToPlayer.text = 'Instructions: Press the space bar to stay upright\nAnd don\'t hit the columns or ground';
     }
     if (!isGameStarted) {
-        bird.setVelocityY(0);
+        bird.body.setAllowGravity(false);
     }
 
     if (cursors.space.isDown && !hasLanded && !hasBumped) {
@@ -84,17 +86,16 @@ function update () {
     }
 
     if (!hasLanded && !hasBumped && isGameStarted) {
-        bird.body.velocity.x = 50;
+        bird.setVelocityX(50);
     }
     else {
-        bird.body.velocity.x = 0;
+        bird.setVelocityX(0);
     }
     
     if (hasLanded || hasBumped) {
         messageToPlayer.text = `Oh no! You crashed!`;
     }
     if (bird.x > 750) {
-        bird.setVelocityY(40);
         messageToPlayer.text = `Congrats! You won!`;
     } 
 }
